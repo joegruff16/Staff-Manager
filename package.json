@@ -1,7 +1,6 @@
 {
   "dependencies": {
-    "express": "^4.19.2",
-    "inquirer": "^8.2.4",
+    "inquirer": "^8.2.6",
     "pg": "^8.11.5"
   },
   "scripts": {
@@ -11,7 +10,6 @@
   "description": "This is a CLI app that will prompt user to help them design their employee database",
   "version": "1.0.0",
   "main": "server.js",
-  "devDependencies": {},
   "keywords": [
     "CLI",
     "node.js",

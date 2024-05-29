@@ -1,0 +1,5 @@
+-- INSERT INTO departments (name)
+-- VALUES ('Web Development'),
+--        ('Data Science'),
+--        ('Math'),
+--        ('Electives');

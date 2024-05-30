@@ -11,5 +11,6 @@ const { Pool } = require('pg');
 
 // Prompt the user asking them what they want to do using inquirer
 // Examples:
-// View departments function and rinse and repeat for all of the tables
-// Since departments is the most simple create the schema, seeds, and the function for the departments. Then try with roles and lastly to the employees
+// View department function and rinse and repeat for all of the tables
+// Since department is the most simple create the schema, seeds, and the function for the departments. Then try with roles and lastly to the employees
+

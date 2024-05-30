@@ -24,12 +24,27 @@ pool.connect();
 // Application logic
 
 // Prompt the user asking them what they want to do using inquirer
-inquirer
-    .prompt([
-        {
+// Prompt would list the options to view all departments, view all roles, etc. 
+const start = () => {
+    inquirer
+        .prompt([
+            {
+                name: 'Choice',
+                type: 'list',
+                message: 'Please make a selection',
+                choices: [
+                    'View all roles',
+                    'View all departments',
+                    'View all employees'
+                ]
 
-        }
-    ])
+
+            }
+        ]).then((response) => {
+            console.log(response)
+        })
+}
+
 // Examples:
 // View department function and rinse and repeat for all of the tables
 // Create a function here that will enable user to view all departments
@@ -38,7 +53,7 @@ const viewAllDepartments = async () => {
         // Connect to database
         const client = await pool.connect()
         // Get departments from database
-        const department = await client.query(`select * from staff_manager`)
+        const department = await client.query(`select * from department`)
         console.log(department)
 
         // Create variables to store id and name

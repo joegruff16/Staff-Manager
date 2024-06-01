@@ -26,52 +26,62 @@ pool.connect();
 // Prompt the user asking them what they want to do using inquirer
 // Prompt would list the options to view all departments, view all roles, etc. 
 const start = async () => {
-    await inquirer
-        .prompt([
-            {
-                name: 'Choice',
-                type: 'list',
-                message: 'Please make a selection',
-                choices: [
-                    'View all departments',
-                    'View all roles',
-                    'View all employees',
-                    'Add a department',
-                    'Add a role',
-                    'Add a employee',
-                    'Update an employee role'
-                ]
+    let exit = false;
 
-            }
-        ]).then(async (response) => {
-            console.log(response);
+    while (!exit) {
+        await inquirer
+            .prompt([
+                {
+                    name: 'Choice',
+                    type: 'list',
+                    message: 'Please make a selection',
+                    choices: [
+                        'View all departments',
+                        'View all roles',
+                        'View all employees',
+                        'Add a department',
+                        'Add a role',
+                        'Add a employee',
+                        'Update an employee role',
+                        'Exit' // This will allow the user to choose exit or they will continue to make a selection
+                    ]
 
-            // Examples:
-            // View department function and rinse and repeat for all of the tables
-            // Create a function here that will enable user to view all departments
-            const viewAllDepartments = async () => {
-                try {
-                    // Connect to database
-                    const client = await pool.connect()
-                    // Get departments from database
-                    const department = await client.query(`select * from department`)
-                    console.log(department.rows)
-                } catch (err) {
-                    console.error(err)
+                }
+            ]).then(async (response) => {
+                console.log(response);
+
+                // Examples:
+                // View department function and rinse and repeat for all of the tables
+                // Create a function here that will enable user to view all departments
+                const viewAllDepartments = async () => {
+                    try {
+                        // Connect to database
+                        const client = await pool.connect()
+                        // Get departments from database
+                        const department = await client.query(`select * from department`)
+                        console.log(department.rows)
+                    } catch (err) {
+                        console.error(err)
+                    }
+
+                }
+                if (response.Choice === 'Exit') {
+                    exit = true; // Setting exit to true will break the loop
+                } else {
+                    if (response.Choice === 'View all departments') {
+                        await viewAllDepartments();
+                        console.log(response);
+                    }
+                    // Add similiar logic for remaining functions
+                    if (response.Choice === 'Add a department') {
+                        await addDepartment();
+                    }
                 }
 
-            }
-            if (response.Choice === 'View all departments') {
-                await viewAllDepartments();
-                console.log(response);
-            }
-            // Add similiar logic for remaining functions
-            if (response.Choice === 'Add a department') {
-                await addDepartment();
-            }
-        });
 
+            });
 
+    }
 };
 
 start();

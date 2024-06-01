@@ -65,6 +65,27 @@ const start = async () => {
                     }
 
                 }
+                // Create new function to addDepartment
+                const addDepartment = async () => {
+                    try {
+                        // Connect to database
+                        const client = await pool.connect()
+                        // Store user inputed ids and names in these variables
+                        const id = 0;
+                        const name = '';
+                        // Get departments from database
+                        // const addNewDepartment = await client.query('INSERT INTO department (id, name) VALUES ($1, $2)', [id, name])
+                        const addNewDepartment = await client.query('INSERT INTO department (id, name) VALUES ($1, $2)', [id, name])
+                        console.log(addNewDepartment)
+                    } catch (err) {
+                        console.error(err)
+                    } finally {
+                        client.release(); // Received help with Xpert learning assistant on most of this code and this allows the client to be released back into the pool
+                    }
+
+                };
+
+
                 if (response.Choice === 'Exit') {
                     exit = true; // Setting exit to true will break the loop
                 } else {
@@ -86,22 +107,6 @@ const start = async () => {
 
 start();
 
-// Create new function to addDepartment
-const addDepartment = async () => {
-    try {
-        // Connect to database
-        const client = await pool.connect()
-        // Get departments from database
-        const addNewDepartment = await client.query(`INSERT INTO department (id, name)
-    VALUES (1, ('')`)
-        console.log(addNewDepartment)
-    } catch (err) {
-        console.error(err)
-    }
 
-};
-
-
-// Create a function that will enable user to add a department
 // Since department is the most simple create the schema, seeds, and the function for the departments. Then try with roles and lastly to the employees
 

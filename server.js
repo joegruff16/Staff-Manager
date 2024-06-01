@@ -45,6 +45,22 @@ const start = async () => {
             }
         ]).then(async (response) => {
             console.log(response);
+
+            // Examples:
+            // View department function and rinse and repeat for all of the tables
+            // Create a function here that will enable user to view all departments
+            const viewAllDepartments = async () => {
+                try {
+                    // Connect to database
+                    const client = await pool.connect()
+                    // Get departments from database
+                    const department = await client.query(`select * from department`)
+                    console.log(department.rows)
+                } catch (err) {
+                    console.error(err)
+                }
+
+            }
             if (response.Choice === 'View all departments') {
                 await viewAllDepartments();
                 console.log(response);
@@ -54,21 +70,8 @@ const start = async () => {
                 await addDepartment();
             }
         });
-    // Examples:
-    // View department function and rinse and repeat for all of the tables
-    // Create a function here that will enable user to view all departments
-    const viewAllDepartments = async () => {
-        try {
-            // Connect to database
-            const client = await pool.connect()
-            // Get departments from database
-            const department = await client.query(`select * from department`)
-            console.log(department.rows)
-        } catch (err) {
-            console.error(err)
-        }
 
-    }
+
 };
 
 start();

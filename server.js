@@ -26,85 +26,103 @@ pool.connect();
 // Prompt the user asking them what they want to do using inquirer
 // Prompt would list the options to view all departments, view all roles, etc. 
 const start = async () => {
-    let exit = false;
+    await inquirer
+        .prompt([
+            {
+                name: 'choice',
+                type: 'list',
+                message: 'Please make a selection',
+                choices: [
+                    'View all departments',
+                    'View all roles',
+                    'View all employees',
+                    'Add a department',
+                    'Add a role',
+                    'Add a employee',
+                    'Update an employee role',
+                    'Exit' // Exit will become it's on function and not a while loop
+                ]
 
-    while (!exit) {
-        await inquirer
-            .prompt([
-                {
-                    name: 'Choice',
-                    type: 'list',
-                    message: 'Please make a selection',
-                    choices: [
-                        'View all departments',
-                        'View all roles',
-                        'View all employees',
-                        'Add a department',
-                        'Add a role',
-                        'Add a employee',
-                        'Update an employee role',
-                        'Exit' // This will allow the user to choose exit or they will continue to make a selection
-                    ]
-
-                }
-            ]).then(async (response) => {
-                console.log(response);
-
-                // Examples:
-                // View department function and rinse and repeat for all of the tables
-                // Create a function here that will enable user to view all departments
-                const viewAllDepartments = async () => {
-                    try {
-                        // Connect to database
-                        const client = await pool.connect()
-                        // Get departments from database
-                        const department = await client.query(`select * from department`)
-                        console.log(department.rows)
-                    } catch (err) {
-                        console.error(err)
-                    }
-
-                }
-                // Create new function to addDepartment
-                const addDepartment = async () => {
-                    try {
-                        // Connect to database
-                        const client = await pool.connect()
-                        // Store user inputed ids and names in these variables
-                        const id = 0;
-                        const name = '';
-                        // Get departments from database
-                        // const addNewDepartment = await client.query('INSERT INTO department (id, name) VALUES ($1, $2)', [id, name])
-                        const addNewDepartment = await client.query('INSERT INTO department (id, name) VALUES ($1, $2)', [id, name])
-                        console.log(addNewDepartment)
-                    } catch (err) {
-                        console.error(err)
-                    } finally {
-                        client.release(); // Received help with Xpert learning assistant on most of this code and this allows the client to be released back into the pool
-                    }
-
-                };
+            }
+        ]).then(async (response) => {
+            console.log(response)
+            switch (response.choice) {
+                case 'View all departments':
+                    viewAllDepartments()
+                    break; // If you don't include a break it might execute another function or throw an error
+                case 'View all roles':
+                    viewAllRoles()
+                    break;
+                case 'View all employees':
+                    viewAllEmployees()
+                    break;
+                case 'Add a department':
+                    addDepartment()
+                    break;
+                case 'Add a role':
+                    addRole()
+                    break;
+                case 'Add a employee':
+                    addEmployee()
+                    break;
+                case 'Update an employee role':
+                    updateEmployeeRole()
+                    break;
+                case 'Exit':
+                    exit() // create a function with pool.end
+                    break;
+            }
 
 
-                if (response.Choice === 'Exit') {
-                    exit = true; // Setting exit to true will break the loop
-                } else {
-                    if (response.Choice === 'View all departments') {
-                        await viewAllDepartments();
-                        console.log(response);
-                    }
-                    // Add similiar logic for remaining functions
-                    if (response.Choice === 'Add a department') {
-                        await addDepartment();
-                    }
-                }
+        });
 
 
-            });
-
-    }
 };
 
+// Create new function to addDepartment
+async function addDepartment() {
+    // try {
+    inquirer.prompt([{
+        name: "addDepartment",
+        type: "input",
+        message: "What is the name of the department you are adding?"
+    }]).then((response) => {
+        console.log(response)
+        // Connect to database
+        // const client = pool.connect()
+        pool.query("Insert into department(name) values($1)", [response.addDepartment], (error, res) => {
+            if (error) throw error;
+            console.log('New Department has been added')
+            start()
+        })
+    })
+
+
+    // // Get departments from database
+    // } catch (err) {
+
+}
+
+// Examples:
+// View department function and rinse and repeat for all of the tables
+// Create a function here that will enable user to view all departments
+async function viewAllDepartments() {
+    try {
+        // Connect to database
+        const client = await pool.connect()
+        // Get departments from database
+        const department = await client.query(`select * from department`)
+        console.table(department.rows)
+        start()
+    } catch (err) {
+        console.error(err)
+    }
+
+}
+// Can add all the rest of the functions below
+async function exit() {
+    await pool.end()
+}
 start();
 
 

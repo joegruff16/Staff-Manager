@@ -2,4 +2,4 @@
 select * from department;
 
 -- Add a department table
-INSERT INTO department (id, name) VALUES ($1, $2);
+-- INSERT INTO department (id, name) VALUES (1, 2);

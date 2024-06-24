@@ -13,5 +13,17 @@ CREATE TABLE department (
   name VARCHAR(30) NOT NULL
 )
     -- Create roles
+    CREATE TABLE role (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(30) UNIQUE NOT NULL,
+      salary DECIMAL NOT NULL,
+      department_id INTEGER NOT NULL
+    )
     -- Create employees - will reference the roles table and will have foreign keys for it's own table employees and for another employee row for the managers
--- Work next on the seeds.sql to create departments, roles, and then employees in the order we did above
+  CREATE TABLE employee (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    role_id INTEGER NOT NULL,
+    manager_id INTEGER
+  )

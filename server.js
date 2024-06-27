@@ -129,15 +129,20 @@ async function addRole() {
         type: "input",
         message: "What is the salary for the role you are adding?",
       },
+      {
+        name: "department_id",
+        type: "input",
+        message: "What is the department id for the role you are adding?",
+      },
     ])
     .then((response) => {
       console.log(response);
       pool.query(
-        "Insert into role(title, salary) values($1, $2)",
-        [response.addRole, response.salary],
+        "Insert into role(title, salary, department_id) values($1, $2, $3)",
+        [response.addRole, response.salary, response.department_id],
         (error) => {
           if (error) throw error;
-          console.log("New roles has been added");
+          console.log("New role has been added");
           // Output and invoke function
           start();
         }

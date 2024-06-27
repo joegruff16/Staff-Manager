@@ -81,7 +81,24 @@ async function viewAllRoles() {
     const client = await pool.connect();
     // Get roles from database
     const role = await client.query(`select * from role`);
+    // Display roles in a table
     console.table(role.rows);
+    start();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// Function that will display all employees
+
+async function viewAllEmployees() {
+  try {
+    // Connect to the database
+    const client = await pool.connect();
+    // Get employees from the database
+    const employee = await client.query(`select * from employee`);
+    // Display employees in a table
+    console.table(employee.rows);
     start();
   } catch (err) {
     console.error(err);

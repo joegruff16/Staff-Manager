@@ -73,6 +73,20 @@ const start = async () => {
       }
     });
 };
+// Create a function to view all roles
+
+async function viewAllRoles() {
+  try {
+    // Connect to the database
+    const client = await pool.connect();
+    // Get roles from database
+    const role = await client.query(`select * from role`);
+    console.table(role.rows);
+    start();
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 // Create new function to addDepartment
 async function addDepartment() {
@@ -101,9 +115,37 @@ async function addDepartment() {
     });
 }
 
-// Examples:
-// View department function and rinse and repeat for all of the tables
-// Create a function here that will enable user to view all departments
+// Function that allows users to add a role
+async function addRole() {
+  inquirer
+    .prompt([
+      {
+        name: "addRole",
+        type: "input",
+        message: "What is the title of the role you would like to add?",
+      },
+      {
+        name: "salary",
+        type: "input",
+        message: "What is the salary for the role you are adding?",
+      },
+    ])
+    .then((response) => {
+      console.log(response);
+      pool.query(
+        "Insert into role(title, salary) values($1, $2)",
+        [response.addRole, response.salary],
+        (error) => {
+          if (error) throw error;
+          console.log("New roles has been added");
+          // Output and invoke function
+          start();
+        }
+      );
+    });
+}
+
+// Function  here that enables users to view all departments
 async function viewAllDepartments() {
   try {
     // Connect to database
@@ -116,7 +158,7 @@ async function viewAllDepartments() {
     console.error(err);
   }
 }
-// Can add all the rest of the functions below
+
 async function exit() {
   await pool.end();
 }

@@ -132,6 +132,54 @@ async function addDepartment() {
     });
 }
 
+// Function that allows users to add an employee
+async function addEmployee() {
+  inquirer
+    .prompt([
+      {
+        name: "first_name",
+        type: "input",
+        message:
+          "What is the first name of the employee you would like to add?",
+      },
+      {
+        name: "last_name",
+        type: "input",
+        message: "What is the last name of the employee you would like to add?",
+      },
+      {
+        name: "role_id",
+        type: "input",
+        message: "What is the role id of the employee you are adding?",
+      },
+      {
+        name: "manager_id",
+        type: "input",
+        message:
+          "What is the id of the department of the manager who will oversee this employee?",
+      },
+    ])
+    .then((response) => {
+      console.log(response);
+      // Query to insert new employee into database
+      pool.query(
+        "Insert into employee(first_name, last_name, role_id, manager_id) values($1, $2, $3, $4)",
+        [
+          response.first_name,
+          response.last_name,
+          response.role_id,
+          response.manager_id,
+        ],
+        // Error handling to pick up any errors if this doesn't work
+        (error) => {
+          if (error) throw error;
+          console.log("New Employee has been added");
+          // Output and invoke function
+          start();
+        }
+      );
+    });
+}
 // Function that allows users to add a role
 async function addRole() {
   inquirer
@@ -154,9 +202,11 @@ async function addRole() {
     ])
     .then((response) => {
       console.log(response);
+      // Query to insert new role into database
       pool.query(
         "Insert into role(title, salary, department_id) values($1, $2, $3)",
         [response.addRole, response.salary, response.department_id],
+        // Error handling to pick up any errors if this doesn't work
         (error) => {
           if (error) throw error;
           console.log("New role has been added");

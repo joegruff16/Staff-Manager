@@ -9,12 +9,14 @@ select * from role;
 
 -- Add a role
 INSERT INTO role (title, salary, department_id)
+VALUES($1, $2, $3)
 
 -- Displays all employees
 select * from employee;
 
 -- Add an employee
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES($1, $2, $3, $4)
 
 -- Update an employee role
 UPDATE employee

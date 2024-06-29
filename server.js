@@ -1,10 +1,6 @@
 // Packages used for this project are stored in variables below
 const inquirer = require("inquirer");
-// import any other packages here
 const { Pool } = require("pg");
-
-// https://node-postgres.com/features/pooling
-// Use inquirer to capture user prompts to interact with Postgres database like the README generator
 
 // Create a connection to the postgres database. Review examples from activities to create a connection string
 // Connect to my database
@@ -26,6 +22,7 @@ pool.connect();
 // Prompt would list the options to view all departments, view all roles, etc.
 const start = async () => {
   await inquirer
+    // This will prompt the user in the CLI displaying all these possibilities
     .prompt([
       {
         name: "choice",
@@ -45,6 +42,7 @@ const start = async () => {
     ])
     .then(async (response) => {
       console.log(response);
+      // This switch statement will allow the user to select an option and then execute the function that corresponds to that option
       switch (response.choice) {
         case "View all departments":
           viewAllDepartments();

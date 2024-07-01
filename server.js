@@ -96,7 +96,10 @@ async function viewAllEmployees() {
     // Connect to the database
     const client = await pool.connect();
     // Get employees from the database
-    const employee = await client.query(`select * from employee`);
+    const employee =
+      await client.query(`SELECT e.first_name AS First_Name, e.last_name AS Last_Name, r.title AS Title, r.salary AS Salary, 
+    CONCAT(m.first_name, ' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON e.manager_id = m.id
+INNER JOIN role r ON e.role_id = r.id ORDER BY e.last_name;`);
     // Display employees in a table
     console.table(employee.rows);
     start();
@@ -212,8 +215,8 @@ async function addRole() {
       console.log(response);
       // Query to insert new role into database
       pool.query(
-        "Insert into role(title, salary, department_name) values($1, $2, $3)",
-        [response.addRole, response.salary, response.department_name],
+        "Insert into role(title, salary, department_id) values($1, $2, $3)",
+        [response.addRole, response.salary, response.department_id],
         // Error handling to pick up any errors if this doesn't work
         (error) => {
           if (error) throw error;

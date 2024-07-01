@@ -5,10 +5,13 @@ select * from department;
 INSERT INTO department (name)
 
 -- Displays all roles
-select * from role;
+SELECT role.title, role.salary, department.name AS department_name
+FROM role
+INNER JOIN department ON role.department_id = department.id
+ORDER BY department.name, role.title;
 
 -- Add a role
-INSERT INTO role (title, salary, department_id)
+INSERT INTO role (title, salary, department_name)
 VALUES($1, $2, $3)
 
 -- Displays all employees

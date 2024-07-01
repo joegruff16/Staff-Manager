@@ -16,10 +16,10 @@ const pool = new Pool(
 );
 
 pool.connect();
-// Application logic
 
-// Prompt the user asking them what they want to do using inquirer
-// Prompt would list the options to view all departments, view all roles, etc.
+// This part of the code is the Application logic
+
+// Below using inquier I will prompt the user asking them what they want to do
 const start = async () => {
   await inquirer
     // This will prompt the user in the CLI displaying all these possibilities
@@ -78,7 +78,9 @@ async function viewAllRoles() {
     // Connect to the database
     const client = await pool.connect();
     // Get roles from database
-    const role = await client.query(`select * from role`);
+    const role =
+      await client.query(`select role.title, role.salary, department.name AS department_name from role inner join department ON role.department_id = department.id
+order by department.name, role.title;`);
     // Display roles in a table
     console.table(role.rows);
     start();
@@ -193,17 +195,25 @@ async function addRole() {
         message: "What is the salary for the role you are adding?",
       },
       {
-        name: "department_id",
-        type: "input",
-        message: "What is the department id for the role you are adding?",
+        name: "department_name",
+        type: "list",
+        message: "Choose the department that this role belongs to",
+        choices: [
+          "Skills and Development",
+          "Human Resources",
+          "Information Technology",
+          "Management",
+          "Quality Control",
+          "Senior Management",
+        ],
       },
     ])
     .then((response) => {
       console.log(response);
       // Query to insert new role into database
       pool.query(
-        "Insert into role(title, salary, department_id) values($1, $2, $3)",
-        [response.addRole, response.salary, response.department_id],
+        "Insert into role(title, salary, department_name) values($1, $2, $3)",
+        [response.addRole, response.salary, response.department_name],
         // Error handling to pick up any errors if this doesn't work
         (error) => {
           if (error) throw error;
@@ -214,7 +224,10 @@ async function addRole() {
       );
     });
 }
-
+// Function that allows a user to update an employee role
+async function updateEmployeeRole() {
+  inquirer.prompt([{}]);
+}
 // Function  here that enables users to view all departments
 async function viewAllDepartments() {
   try {

@@ -1,4 +1,5 @@
 -- Department Table - shows all departments with name and ids
+-- Review departments first and understand it then review roles. Because there are less relationships than with employees
 select * from department;
 
 -- Add a department table
@@ -11,11 +12,12 @@ INNER JOIN department ON role.department_id = department.id
 ORDER BY department.name, role.title;
 
 -- Add a role
-INSERT INTO role (title, salary, department_id)
+SELECT id FROM department WHERE name = $1;
+INSERT INTO role (title, salary, department_id) 
 VALUES($1, $2, $3)
 
 -- Displays all employees
--- select * from employee; Received help from GitHub Copilot on this one
+-- Received help from GitHub Copilot on this one
 SELECT 
     e.first_name AS EmployeeFirstName, 
     e.last_name AS EmployeeLastName, 

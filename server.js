@@ -211,20 +211,31 @@ async function addRole() {
         ],
       },
     ])
-    .then((response) => {
-      console.log(response);
-      // Query to insert new role into database
-      pool.query(
-        "Insert into role(title, salary, department_id) values($1, $2, $3)",
-        [response.addRole, response.salary, response.department_id],
-        // Error handling to pick up any errors if this doesn't work
-        (error) => {
-          if (error) throw error;
-          console.log("New role has been added");
-          // Output and invoke function
-          start();
+    .then(async (response) => {
+      try {
+        // Query to retrieve department id based on department name
+        const departmentQuery = "SELECT id FROM department WHERE name = $1";
+        const departmentResults = await pool.query(departmentQuery, [
+          response.department_name,
+        ]);
+        if (departmentResults.rows.length === 0) {
+          throw new Error("Department not found");
         }
-      );
+        const departmentId = departmentResults.rows[0].id;
+        // Insert new role
+        const insertQuery =
+          "INSERT INTO role (title, salary, department_id) VALUES($1, $2, $3)";
+        await pool.query(insertQuery, [
+          response.addRole,
+          response.salary,
+          departmentId,
+        ]);
+        console.log("new role has been added");
+        // Output and invoke function
+        start();
+      } catch (error) {
+        console.error("Error adding role:", error);
+      }
     });
 }
 // Function that allows a user to update an employee role

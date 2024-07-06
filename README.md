@@ -6,7 +6,7 @@ This is a CLI app that will prompt employers to help them design their employee 
 
 ## Finished Product
 
-![CLIview](./assets/images/cli-view.png)
+![CLIview](./assets/images/cli_finished_product.png)
 
 ## Usage
 

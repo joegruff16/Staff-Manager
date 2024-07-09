@@ -138,54 +138,6 @@ async function addDepartment() {
     });
 }
 
-// Function that allows users to add an employee
-async function addEmployee() {
-  inquirer
-    .prompt([
-      {
-        name: "first_name",
-        type: "input",
-        message:
-          "What is the first name of the employee you would like to add?",
-      },
-      {
-        name: "last_name",
-        type: "input",
-        message: "What is the last name of the employee you would like to add?",
-      },
-      {
-        name: "role_id",
-        type: "input",
-        message: "What is the role id of the employee you are adding?",
-      },
-      {
-        name: "manager_id",
-        type: "input",
-        message:
-          "What is the id of the department of the manager who will oversee this employee?",
-      },
-    ])
-    .then((response) => {
-      console.log(response);
-      // Query to insert new employee into database
-      pool.query(
-        "Insert into employee(first_name, last_name, role_id, manager_id) values($1, $2, $3, $4)",
-        [
-          response.first_name,
-          response.last_name,
-          response.role_id,
-          response.manager_id,
-        ],
-        // Error handling to pick up any errors if this doesn't work
-        (error) => {
-          if (error) throw error;
-          console.log("New Employee has been added");
-          // Output and invoke function
-          start();
-        }
-      );
-    });
-}
 // Function that allows users to add a role
 async function addRole() {
   inquirer
@@ -238,6 +190,76 @@ async function addRole() {
         start();
       } catch (error) {
         console.error("Error adding role:", error);
+      }
+    });
+}
+// Function that allows users to add an employee
+async function addEmployee() {
+  inquirer
+    .prompt([
+      {
+        name: "first_name",
+        type: "input",
+        message: "What is the first name of the employee you are going to add?",
+      },
+      {
+        name: "last_name",
+        type: "input",
+        message: "What is the last name of the employee you are adding?",
+      },
+      {
+        name: "role_title",
+        type: "input",
+        message: "What is the role of the employee you are adding?",
+      },
+      {
+        name: "manager",
+        type: "list",
+        message: "Who is the manager of the employee you are adding?",
+        choices: [
+          "Jill Torresdale",
+          "Francesca Marino",
+          "Jane Shelby",
+          "Alex Gentry",
+          "Frank Criniti",
+          "Suzanne Kalb",
+          "John Shepard",
+          "Jim Gregg",
+        ],
+      },
+    ])
+    .then(async (response) => {
+      try {
+        // Query to retrieve role id based on role title
+        const roleQuery = "SELECT id FROM role WHERE title = $1";
+        const roleResults = await pool.query(roleQuery, [response.role_title]);
+        if (roleResults.rows.length === 0) {
+          throw new Error("Role not found");
+        }
+        const roleId = roleResults.rows[0].id;
+        // Query to retrieve manager id based on manager name
+        const managerQuery = "SELECT id FROM employee WHERE first_name = $1";
+        const managerResults = await pool.query(managerQuery, [
+          response.manager,
+        ]);
+        if (managerResults.rows.length === 0) {
+          throw new Error("Manager not found");
+        }
+        const managerId = managerResults.rows[0].id;
+        // Insert new employee
+        const insertQuery =
+          "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES($1, $2, $3, $4)";
+        await pool.query(insertQuery, [
+          response.first_name,
+          response.last_name,
+          roleId,
+          managerId,
+        ]);
+        console.log("new employee has been added");
+        // Output and invoke function
+        start();
+      } catch (error) {
+        console.error("Error adding employee:", error);
       }
     });
 }

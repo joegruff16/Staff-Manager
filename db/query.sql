@@ -27,6 +27,7 @@ INNER JOIN role position ON worker.role_id = position.id
 ORDER BY worker.last_name;
 
 -- Add an employee
+SELECT id FROM role WHERE title = $1;
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES($1, $2, $3, $4)
 

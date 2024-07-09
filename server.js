@@ -96,10 +96,13 @@ async function viewAllEmployees() {
     // Connect to the database
     const client = await pool.connect();
     // Get employees from the database
+    // Alias: employee = worker, role = position, manager = supervisor
     const employee =
-      await client.query(`SELECT e.first_name AS First_Name, e.last_name AS Last_Name, r.title AS Title, r.salary AS Salary, 
-    CONCAT(m.first_name, ' ', m.last_name) AS Manager FROM employee e LEFT JOIN employee m ON e.manager_id = m.id
-INNER JOIN role r ON e.role_id = r.id ORDER BY e.last_name;`);
+      await client.query(`SELECT worker.first_name, worker.last_name, position.title AS role_title, CONCAT(supervisor.first_name, ' ', supervisor.last_name) AS Manager
+      FROM employee worker
+      LEFT JOIN employee supervisor ON worker.manager_id = supervisor.id
+      INNER JOIN role position ON worker.role_id = position.id
+      ORDER BY worker.last_name;`);
     // Display employees in a table
     console.table(employee.rows);
     start();

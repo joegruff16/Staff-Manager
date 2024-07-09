@@ -16,16 +16,15 @@ SELECT id FROM department WHERE name = $1;
 INSERT INTO role (title, salary, department_id) 
 VALUES($1, $2, $3)
 
--- Displays all employees
+-- Displays all employees, utilized aliases to properly include all columns
+-- Alias: employee = worker, role = position, manager = supervisor
 -- Received help from GitHub Copilot on this one
-SELECT 
-    e.first_name AS EmployeeFirstName, 
-    e.last_name AS EmployeeLastName, 
-    CONCAT(m.first_name, ' ', m.last_name) AS ManagerFullName
-FROM employee e
-LEFT JOIN employee m ON e.manager_id = m.id
-INNER JOIN role r ON e.role_id = r.id
-ORDER BY e.last_name;
+SELECT worker.first_name, worker.last_name, position.title AS role.title,
+    CONCAT(supervisor.first_name, ' ', supervisor.last_name) AS ManagerFullName
+FROM employee worker
+LEFT JOIN employee supervisor ON worker.manager_id = supervisor.id
+INNER JOIN role position ON worker.role_id = position.id
+ORDER BY worker.last_name;
 
 -- Add an employee
 INSERT INTO employee (first_name, last_name, role_id, manager_id)

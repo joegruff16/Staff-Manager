@@ -205,6 +205,22 @@ async function searchRoles() {
     throw error;
   }
 }
+// Function that will search for managers in the database
+async function searchManagers() {
+  const query =
+    "SELECT id, first_name || ' ' || last_name AS name from employee WHERE manager_id IS NOT NULL";
+  try {
+    const result = await pool.query(query);
+    const managers = result.rows.map((row) => ({
+      name: row.name,
+      value: row.id,
+    }));
+    return managers;
+  } catch (error) {
+    console.error("Error finding managers:", error);
+    throw error;
+  }
+}
 // Function that allows users to add an employee
 async function addEmployee() {
   // Db.search to pull in all of the roles with the name and id
@@ -244,28 +260,28 @@ async function addEmployee() {
         type: "list",
         message: "Who is the manager of the employee you are adding?",
         choices: managerOptions,
-
-        //   "Jill Torresdale",
-        //   "Francesca Marino",
-        //   "Jane Shelby",
-        //   "Alex Gentry",
-        //   "Frank Criniti",
-        //   "Suzanne Kalb",
-        //   "John Shepard",
-        //   "Jim Gregg",
-        // ],
       },
     ])
     .then(async (response) => {
       try {
+        // This will find the selected role_id based on the user's selection
+        const selectedRoleId = response.roleOptions.find(
+          (option) => option.name === response.role
+        ).value;
+
+        // This will then find the selected manager_id based on the user's selection
+        const selectedManagerId = response.managerOptions.find(
+          (option) => option.name === response.manager
+        ).value;
+
         // Insert new employee
         const insertQuery =
           "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES($1, $2, $3, $4)";
         await pool.query(insertQuery, [
           response.first_name,
           response.last_name,
-          response.role_title,
-          response.manager,
+          selectedRoleId,
+          selectedManagerId,
         ]);
         console.log("new employee has been added");
         // Output and invoke function

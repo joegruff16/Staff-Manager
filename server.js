@@ -265,32 +265,49 @@ async function addEmployee() {
     .then(async (response) => {
       try {
         // This will find the selected role_id based on the user's selection
-        const selectedRoleId = response.roleOptions.find(
-          (option) => option.name === response.role
-        ).value;
+        const selectedRole = roleOptions.find(
+          (option) => option.name && option.id === response.role
+        );
+        if (selectedRole) {
+          const selectedRoleId = selectedRole.value;
+          console.log(selectedRoleId);
+        } else {
+          console.log("Selected Role not found");
+        }
 
         // This will then find the selected manager_id based on the user's selection
-        const selectedManagerId = response.managerOptions.find(
-          (option) => option.name === response.manager
-        ).value;
-
-        // Insert new employee
-        const insertQuery =
-          "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES($1, $2, $3, $4)";
-        await pool.query(insertQuery, [
-          response.first_name,
-          response.last_name,
-          selectedRoleId,
-          selectedManagerId,
-        ]);
-        console.log("new employee has been added");
-        // Output and invoke function
-        start();
+        const selectedManager = managerOptions.find(
+          (option) => option.name && option.id === response.manager
+        );
+        if (selectedManager) {
+          const selectedManagerId = selectedManager.value;
+          console.log(selectedManagerId);
+        } else {
+          console.log("Selected Manager not found");
+        }
       } catch (error) {
-        console.error("Error adding employee:", error);
+        console.error("Error", error);
       }
+
+      // Insert new employee
+
+      const insertQuery =
+        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES($1, $2, $3, $4)";
+      await pool.query(insertQuery, [
+        response.first_name,
+        response.last_name,
+        response.role_title,
+        response.manager,
+      ]);
+      console.log("new employee has been added");
+      // Output and invoke function
+      start();
     });
 }
+// } catch (error) {
+//   console.error("Error adding employee:", error);
+// }
+
 // Function that allows a user to update an employee role
 async function updateEmployeeRole() {
   inquirer.prompt([{}]);

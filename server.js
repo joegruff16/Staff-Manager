@@ -193,8 +193,34 @@ async function addRole() {
       }
     });
 }
+// Function that will search for roles in the database
+async function searchRoles() {
+  const query = "SELECT id, title AS name FROM role";
+  try {
+    const result = await pool.query(query);
+    const roles = result.rows.map((row) => ({ name: row.name, value: row.id }));
+    return roles;
+  } catch (error) {
+    console.error("Error searching roles:", error);
+    throw error;
+  }
+}
 // Function that allows users to add an employee
 async function addEmployee() {
+  // Db.search to pull in all of the roles with the name and id
+  const roles = await searchRoles();
+  const roleOptions = roles.map((role) => ({
+    name: role.name,
+    value: role.id,
+  }));
+
+  // Db.search employees table to pull in all of the managers with name and id
+  const managers = await searchManagers();
+  const managerOptions = managers.map((manager) => ({
+    name: manager.name,
+    value: manager.id,
+  }));
+
   inquirer
     .prompt([
       {
@@ -209,51 +235,37 @@ async function addEmployee() {
       },
       {
         name: "role_title",
-        type: "input",
-        message: "What is the role of the employee you are adding?",
+        type: "list",
+        message: "Which role does the employee you are adding have?",
+        choices: roleOptions,
       },
       {
         name: "manager",
         type: "list",
         message: "Who is the manager of the employee you are adding?",
-        choices: [
-          "Jill Torresdale",
-          "Francesca Marino",
-          "Jane Shelby",
-          "Alex Gentry",
-          "Frank Criniti",
-          "Suzanne Kalb",
-          "John Shepard",
-          "Jim Gregg",
-        ],
+        choices: managerOptions,
+
+        //   "Jill Torresdale",
+        //   "Francesca Marino",
+        //   "Jane Shelby",
+        //   "Alex Gentry",
+        //   "Frank Criniti",
+        //   "Suzanne Kalb",
+        //   "John Shepard",
+        //   "Jim Gregg",
+        // ],
       },
     ])
     .then(async (response) => {
       try {
-        // Query to retrieve role id based on role title
-        const roleQuery = "SELECT id FROM role WHERE title = $1";
-        const roleResults = await pool.query(roleQuery, [response.role_title]);
-        if (roleResults.rows.length === 0) {
-          throw new Error("Role not found");
-        }
-        const roleId = roleResults.rows[0].id;
-        // Query to retrieve manager id based on manager name
-        const managerQuery = "SELECT id FROM employee WHERE first_name = $1";
-        const managerResults = await pool.query(managerQuery, [
-          response.manager,
-        ]);
-        if (managerResults.rows.length === 0) {
-          throw new Error("Manager not found");
-        }
-        const managerId = managerResults.rows[0].id;
         // Insert new employee
         const insertQuery =
           "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES($1, $2, $3, $4)";
         await pool.query(insertQuery, [
           response.first_name,
           response.last_name,
-          roleId,
-          managerId,
+          response.role_title,
+          response.manager,
         ]);
         console.log("new employee has been added");
         // Output and invoke function

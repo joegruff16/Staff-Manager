@@ -27,3 +27,4 @@ CREATE TABLE department (
     role_id INTEGER NOT NULL,
     manager_id INTEGER NOT NULL
   )
+  -- Edit this to include the foreign keys

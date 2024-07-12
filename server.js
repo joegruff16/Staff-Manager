@@ -198,7 +198,7 @@ async function searchRoles() {
   const query = "SELECT id, title AS name FROM role";
   try {
     const result = await pool.query(query);
-    const roles = result.rows.map((row) => ({ name: row.name, value: row.id }));
+    const roles = result.rows.map((row) => ({ value: row.id, name: row.name }));
     return roles;
   } catch (error) {
     console.error("Error searching roles:", error);
@@ -224,18 +224,18 @@ async function searchManagers() {
 // Function that allows users to add an employee
 async function addEmployee() {
   // Db.search to pull in all of the roles with the name and id
-  const roles = await searchRoles();
-  const roleOptions = roles.map((role) => ({
-    name: role.name,
-    value: role.id,
-  }));
-
+  const roleOptions = await searchRoles();
+  // const roleOptions = roles.map((role) => ({
+  //   value: role.id,
+  //   name: role.name,
+  // }));
+  console.log(roleOptions);
   // Db.search employees table to pull in all of the managers with name and id
-  const managers = await searchManagers();
-  const managerOptions = managers.map((manager) => ({
-    name: manager.name,
-    value: manager.id,
-  }));
+  const managerOptions = await searchManagers();
+  // const managerOptions = managers.map((manager) => ({
+  //   value: manager.id,
+  //   name: manager.name,
+  // }));
 
   inquirer
     .prompt([
@@ -263,42 +263,17 @@ async function addEmployee() {
       },
     ])
     .then(async (response) => {
-      try {
-        // This will find the selected role_id based on the user's selection
-        const selectedRole = roleOptions.find(
-          (option) => option.name && option.id === response.role
-        );
-        if (selectedRole) {
-          const selectedRoleId = selectedRole.value;
-          console.log(selectedRoleId);
-        } else {
-          console.log("Selected Role not found");
-        }
-
-        // This will then find the selected manager_id based on the user's selection
-        const selectedManager = managerOptions.find(
-          (option) => option.name && option.id === response.manager
-        );
-        if (selectedManager) {
-          const selectedManagerId = selectedManager.value;
-          console.log(selectedManagerId);
-        } else {
-          console.log("Selected Manager not found");
-        }
-      } catch (error) {
-        console.error("Error", error);
-      }
+      console.log(response, "=====");
+      let firstName = response.first_name;
+      let lastName = response.last_name;
+      let roleId = response.role_title;
+      let manager = response.manager;
+      console.log(firstName, lastName, roleId, manager);
 
       // Insert new employee
-
       const insertQuery =
         "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES($1, $2, $3, $4)";
-      await pool.query(insertQuery, [
-        response.first_name,
-        response.last_name,
-        response.role_title,
-        response.manager,
-      ]);
+      pool.query(insertQuery, [firstName, lastName, roleId, manager]);
       console.log("new employee has been added");
       // Output and invoke function
       start();

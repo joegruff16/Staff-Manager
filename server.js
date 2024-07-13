@@ -299,14 +299,19 @@ async function searchRoles() {
 // Search for employees in the database
 async function searchEmployees() {
   const query =
-    "SELECT id, first_name || ' ' || last_name AS name from employee";
+    "SELECT id, first_name || ' ' || last_name AS name from employee ";
   try {
     const result = await pool.query(query);
+    result.rows.forEach((row) => {
+      console.log(row);
+    });
+    // Using map to find employees by id and name
     const employees = result.rows.map((row) => ({
       name: row.name,
       value: row.id,
     }));
-    // Using map to find employees by id and name
+
+    console.log(employees);
     return employees;
   } catch (error) {
     console.error("Error searching for employees", error);
@@ -318,7 +323,6 @@ async function searchEmployees() {
 async function updateEmployeeRole() {
   const roleOptions = await searchRoles();
   const employeeOptions = await searchEmployees();
-  console.log(employeeOptions);
   // call a similiar function to map employees
   inquirer
     .prompt([
@@ -337,7 +341,7 @@ async function updateEmployeeRole() {
       console.log(roleOptions),
     ])
     .then((response) => {
-      let employeeChoice = response.employee_id;
+      let employeeChoice = response.employeeOptions;
       let roleChoice = response.role_options;
       pool.query(
         "UPDATE employee SET role_id = (SELECT id FROM role WHERE title = $1) WHERE id = $2",

@@ -19,7 +19,7 @@ This is a CLI app that will prompt employers to help them design their employee 
 
 ## Video Link
 
-<>
+<https://drive.google.com/file/d/1y8gCvGX4J9AuiP-7p2V3Izx0f8uq_IHB/view?usp=sharing>
 
 ## GitHub Repo
 

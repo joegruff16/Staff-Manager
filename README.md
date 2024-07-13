@@ -29,4 +29,5 @@ This is a CLI app that will prompt employers to help them design their employee 
 
 - Used this github to add usage markdown badges
   - **<https://github.com/Ileriayo/markdown-badges>**
-- Added this license badge -**<https://gist.github.com/lukas-h/2a5d00690736b4c3a7ba>**
+- Added this license badge
+  - **<https://gist.github.com/lukas-h/2a5d00690736b4c3a7ba>**

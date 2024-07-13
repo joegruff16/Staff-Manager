@@ -323,7 +323,6 @@ async function searchEmployees() {
 async function updateEmployeeRole() {
   const roleOptions = await searchRoles();
   const employeeOptions = await searchEmployees();
-  // call a similiar function to map employees
   inquirer
     .prompt([
       {
@@ -338,16 +337,23 @@ async function updateEmployeeRole() {
         message: "What role do you want to change it to?",
         choices: roleOptions,
       },
-      console.log(roleOptions),
     ])
-    .then((response) => {
-      let employeeChoice = response.employeeOptions;
+    .then(async (response) => {
+      let employeeChoice = response.employee_id;
       let roleChoice = response.role_options;
-      pool.query(
-        "UPDATE employee SET role_id = (SELECT id FROM role WHERE title = $1) WHERE id = $2",
-        [employeeChoice, roleChoice],
-        console.log(employeeChoice, roleChoice)
-      );
+      const updateQuery =
+        "UPDATE employee SET role_id = (SELECT id FROM role WHERE title = $1) WHERE id = $2";
+
+      try {
+        await pool.query(updateQuery, [roleChoice, employeeChoice]);
+        console.log(`Employee's role updated`);
+      } catch (error) {
+        console.error("Error updating employees role", error);
+        throw error;
+      }
+    })
+    .catch((error) => {
+      console.error("Error in the inquirer prompt", error);
     });
 }
 

@@ -211,6 +211,7 @@ async function searchManagers() {
     "SELECT id, first_name || ' ' || last_name AS name from employee WHERE manager_id IS NOT NULL";
   try {
     const result = await pool.query(query);
+    // This search will now find managers by name and id
     const managers = result.rows.map((row) => ({
       name: row.name,
       value: row.id,
@@ -282,44 +283,66 @@ async function addEmployee() {
 // } catch (error) {
 //   console.error("Error adding employee:", error);
 // }
-// Search for roles
+// Search for roles in the database
 async function searchRoles() {
   const query = "SELECT id, title AS name FROM role";
   try {
     const result = await pool.query(query);
-    const roles = result.rows.map((row) => ({ value: row.id, name: row.name }));
+    // Using map to find roles by id and name
+    const roles = result.rows.map((row) => ({ name: row.name, value: row.id }));
     return roles;
   } catch (error) {
     console.error("Error searching roles:", error);
     throw error;
   }
 }
+// Search for employees in the database
+async function searchEmployees() {
+  const query =
+    "SELECT id, first_name || ' ' || last_name AS name from employee";
+  try {
+    const result = await pool.query(query);
+    const employees = result.rows.map((row) => ({
+      name: row.name,
+      value: row.id,
+    }));
+    // Using map to find employees by id and name
+    return employees;
+  } catch (error) {
+    console.error("Error searching for employees", error);
+    throw error;
+  }
+}
 // Search for employees
 // Function that allows a user to update an employee role
 async function updateEmployeeRole() {
-  const roleOptions = searchRoles();
+  const roleOptions = await searchRoles();
+  const employeeOptions = await searchEmployees();
+  console.log(employeeOptions);
   // call a similiar function to map employees
   inquirer
     .prompt([
       {
-        type: "list",
         name: "employee_id",
-        message: "What employee are you updating",
+        type: "list",
+        message: "What employee are you updating?",
         choices: employeeOptions,
       },
       {
-        type: "list",
         name: "role_options",
-        message: "What role do you want to change it to",
+        type: "list",
+        message: "What role do you want to change it to?",
         choices: roleOptions,
       },
+      console.log(roleOptions),
     ])
     .then((response) => {
       let employeeChoice = response.employee_id;
       let roleChoice = response.role_options;
       pool.query(
         "UPDATE employee SET role_id = (SELECT id FROM role WHERE title = $1) WHERE id = $2",
-        [employeeChoice, roleChoice]
+        [employeeChoice, roleChoice],
+        console.log(employeeChoice, roleChoice)
       );
     });
 }

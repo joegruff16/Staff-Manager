@@ -282,11 +282,48 @@ async function addEmployee() {
 // } catch (error) {
 //   console.error("Error adding employee:", error);
 // }
-
+// Search for roles
+async function searchRoles() {
+  const query = "SELECT id, title AS name FROM role";
+  try {
+    const result = await pool.query(query);
+    const roles = result.rows.map((row) => ({ value: row.id, name: row.name }));
+    return roles;
+  } catch (error) {
+    console.error("Error searching roles:", error);
+    throw error;
+  }
+}
+// Search for employees
 // Function that allows a user to update an employee role
 async function updateEmployeeRole() {
-  inquirer.prompt([{}]);
+  const roleOptions = searchRoles();
+  // call a similiar function to map employees
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "employee_id",
+        message: "What employee are you updating",
+        choices: employeeOptions,
+      },
+      {
+        type: "list",
+        name: "role_options",
+        message: "What role do you want to change it to",
+        choices: roleOptions,
+      },
+    ])
+    .then((response) => {
+      let employeeChoice = response.employee_id;
+      let roleChoice = response.role_options;
+      pool.query(
+        "UPDATE employee SET role_id = (SELECT id FROM role WHERE title = $1) WHERE id = $2",
+        [employeeChoice, roleChoice]
+      );
+    });
 }
+
 // Function  here that enables users to view all departments
 async function viewAllDepartments() {
   try {

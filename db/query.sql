@@ -33,5 +33,5 @@ VALUES($1, $2, $3, $4)
 
 -- Update an employee role
 UPDATE employee
-SET role_id = (SELECT id FROM role WHERE title = 'HR Manager')
+SET role_id = (SELECT id FROM role WHERE title = $1)
 WHERE id = 4;
